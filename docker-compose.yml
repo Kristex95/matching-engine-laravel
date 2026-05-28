@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  laravel:
+    build: .
+    container_name: laravel-matching-engine-app
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      mysql:
+        condition: service_started
+      redis:
+        condition: service_started
+    entrypoint: /var/www/html/docker-entrypoint.sh
+    networks:
+      - matching-engine
+
+  mysql:
+    image: mysql:8.0
+    container_name: matching-engine-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: matching_engine_db
+      MYSQL_USER: matching_engine_user
+      MYSQL_PASSWORD: matching_engine_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    networks:
+      - matching-engine
+
+  redis:
+    image: redis:7-alpine
+    container_name: php-matching-engline-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - matching-engine
+
+volumes:
+  db_data:
+  redis_data:
+
+networks:
+  matching-engine:
+    driver: bridge
