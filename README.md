@@ -4,7 +4,7 @@ Matching Engine is a backend financial transaction processing system built with 
 ## Getting Started
 
 ### 1. Clone repository
-bash `git clone <repository-url>` 
+bash `git clone https://github.com/Kristex95/matching-engine-laravel.git` 
 
 ### 2. Create environment configuration
 Copy .env.example and rename it to .env
@@ -17,6 +17,9 @@ Update sensitive configuration values inside .env such as:
 
 ### 3. Start application with Docker
 bash `docker compose up -d`
+
+## Tests coverage
+Located at `/coverage/index.html`
 
 ## Tech stack
 - PHP 8.2
