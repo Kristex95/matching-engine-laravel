@@ -16,10 +16,14 @@ RUN apt-get update && apt-get install -y \
 # Install PHP extensions
 RUN docker-php-ext-install zip pdo pdo_mysql bcmath pcntl
 
+# Install Xdebug
+
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
 # Configure Xdebug
 RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.start_with_request=no" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.in
+    && echo "xdebug.start_with_request=no" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Install Redis extension
 RUN pecl install redis \
