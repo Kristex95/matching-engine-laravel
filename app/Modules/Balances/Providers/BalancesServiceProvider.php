@@ -6,7 +6,7 @@ namespace App\Modules\Balances\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class BalanceServiceProvider extends ServiceProvider
+class BalancesServiceProvider extends ServiceProvider
 {
     public function register(): void {}
 

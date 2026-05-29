@@ -6,6 +6,7 @@ use App\Modules\Accounts\Database\Seeders\AccountSeeder;
 use App\Modules\Accounts\Domain\Account;
 use App\Modules\Auth\Domain\User;
 use App\Modules\Balances\Domain\Balance;
+use App\Modules\Orders\Domain\Order;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -29,5 +30,6 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
         Account::factory(10)->create();
         Balance::factory(10)->create();
+        Order::factory(10)->create();
     }
 }

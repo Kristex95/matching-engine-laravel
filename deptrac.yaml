@@ -11,7 +11,11 @@ deptrac:
     - name: Balances
       collectors:
         - { type: classLike, value: ^App\\Modules\\Balances\\.* }
+    - name: Orders
+      collectors:
+        - { type: classLike, value: ^App\\Modules\\Orders\\.* }
   ruleset:
     Auth: []
     Accounts: [Auth]
     Balances: [Accounts]
+    Orders: [Balances, Accounts]
