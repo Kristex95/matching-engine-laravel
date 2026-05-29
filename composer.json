@@ -30,6 +30,7 @@
             "App\\": "app/",
             "App\\Modules\\Auth\\": "app/Modules/Auth/",
             "App\\Modules\\Accounts\\": "app/Modules/Accounts/",
+            "App\\Modules\\Balances\\": "app/Modules/Balances/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
