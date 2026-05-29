@@ -1,8 +1,10 @@
 <?php
 
-namespace Database\Factories;
+declare(strict_types=1);
 
-use App\Models\User;
+namespace App\Modules\Auth\Database\Factories;
+
+use App\Modules\Auth\Domain\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,6 +14,8 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    protected $model = User::class;
+
     /**
      * The current password being used by the factory.
      */

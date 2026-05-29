@@ -1,0 +1,13 @@
+deptrac:
+  paths:
+    - ./app/Modules
+  layers:
+    - name: Auth
+      collectors:
+        - { type: classLike, value: ^App\\Modules\\Auth\\.* }
+    - name: Accounts
+      collectors:
+        - { type: classLike, value: ^App\\Modules\\Accounts\\.* }
+  ruleset:
+    Auth: []
+    Accounts: [Auth]

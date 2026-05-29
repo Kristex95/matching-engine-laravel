@@ -6,3 +6,4 @@ parameters:
     tmpDir: storage/phpstan
 includes:
     - vendor/phpstan/phpstan-mockery/extension.neon
+    - vendor/nunomaduro/larastan/extension.neon
