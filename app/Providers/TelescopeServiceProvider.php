@@ -56,6 +56,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function gate(): void
     {
+        // @phpstan-ignore-next-line
         Gate::define('viewTelescope', fn (User $user) => in_array($user->email, [
             //
         ], true));

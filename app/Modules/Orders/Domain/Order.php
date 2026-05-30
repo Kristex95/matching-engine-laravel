@@ -10,6 +10,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property string $side
+ * @property string $type
+ * @property string $currency
+ * @property string $price
+ * @property float $amount
+ * @property float $filled_amount
+ * @property string $status
+ */
 class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
