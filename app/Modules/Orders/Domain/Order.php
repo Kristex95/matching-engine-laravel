@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property string $uuid
  * @property int $account_id
  * @property string $side
  * @property string $type
@@ -29,6 +30,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'uuid',
         'account_id',
         'side',
         'type',

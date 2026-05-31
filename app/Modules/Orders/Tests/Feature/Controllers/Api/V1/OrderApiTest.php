@@ -6,6 +6,7 @@ namespace App\Modules\Orders\Tests\Feature\Controllers\Api\V1;
 
 use App\Modules\Orders\Domain\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OrderApiTest extends TestCase
@@ -23,7 +24,7 @@ class OrderApiTest extends TestCase
         $response->assertJsonStructure([
             'data' => [
                 '*' => [
-                    'id',
+                    'order_id',
                     'account_id',
                     'side',
                     'type',
@@ -61,7 +62,77 @@ class OrderApiTest extends TestCase
         ]);
 
         $response->assertJsonFragment([
-            'id' => $order->id,
+            'order_id' => $order->uuid,
+        ]);
+    }
+
+    public function test_order_store_returns_201_and_creates_order_when_valid(): void
+    {
+        $response = $this->postJson('/api/v1/orders', [
+            'side' => 'buy',
+            'type' => 'limit',
+            'currency' => 'BTC',
+            "price" => 77000,
+            "amount" => 1,
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonStructure([
+            'data' => [
+                "account_id",
+                "side",
+                "type",
+                "currency",
+                "price",
+                "amount",
+                "filled_amount",
+                "status",
+                "created_at",
+                "updated_at",
+            ],
+        ]);
+
+        $this->assertDatabaseHas('orders', [
+            'type'       => 'limit',
+            'side'       => 'buy',
+            'currency'   => 'BTC',
+            'price'      => 77000,
+            'amount'     => 1,
+            'filled_amount' => 0,
+            'status'     => 'new',
+        ]);
+
+        $this->assertDatabaseHas('active_orders', [
+            'type'       => 'limit',
+            'side'       => 'buy',
+            'currency'   => 'BTC',
+            'price'      => 77000,
+            'amount'     => 1,
+            'filled_amount' => 0,
+            'status'     => 'new',
+        ]);
+
+        $this->assertEquals(
+            DB::table('orders')->first(),
+            DB::table('active_orders')->first()
+        );
+    }
+
+    public function test_order_store_returns_422_when_creating_limit_order_without_price(): void
+    {
+        $response = $this->postJson('/api/v1/orders', [
+            'side' => 'buy',
+            'type' => 'limit',
+            'currency' => 'BTC',
+            "amount" => 1,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure([
+            "message",
+            "errors" => [
+                "price",
+            ],
         ]);
     }
 }

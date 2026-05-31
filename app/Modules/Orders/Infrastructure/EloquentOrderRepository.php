@@ -5,32 +5,58 @@ declare(strict_types=1);
 namespace App\Modules\Orders\Infrastructure;
 
 use App\Modules\Orders\Application\DTO\OrderFilterDTO;
+use App\Modules\Orders\Application\DTO\StoreOrderDTO;
 use App\Modules\Orders\Domain\Order;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
+/**
+ * @template TModel of Order
+ */
 class EloquentOrderRepository implements OrderRepository
 {
     /**
-     * @return Collection<int, Order>
+     * @param class-string<TModel> $modelClass
+     */
+    public function __construct(
+        private string $modelClass
+    ) {}
+
+    /**
+     * @return Builder<TModel>
+     */
+    private function query(): Builder
+    {
+        /** @var Builder<TModel> */
+        return (new $this->modelClass())->newQuery();
+    }
+
+    /**
+     * @return Collection<int, TModel>
      */
     public function findAll(): Collection
     {
-        return Order::all();
+        /** @var Collection<int, TModel> */
+        return $this->query()->get();
     }
 
     public function findById(int $id): Order
     {
-        return Order::query()->findOrFail($id);
+        return $this->query()->findOrFail($id);
     }
 
     /**
-     * @return LengthAwarePaginator<int, Order>
+     * @return LengthAwarePaginator<int, TModel>
      */
     public function getPaginated(OrderFilterDTO $filter): LengthAwarePaginator
     {
-        $query = Order::query()
+        $query = $this->query()
             ->orderByDesc('created_at');
+
+        if ($filter->orderId !== null) {
+            $query->where('uuid', $filter->orderId);
+        }
 
         if ($filter->accountId !== null) {
             $query->where('account_id', $filter->accountId);
@@ -52,7 +78,27 @@ class EloquentOrderRepository implements OrderRepository
             $query->where('status', $filter->status);
         }
 
+        /** @var LengthAwarePaginator<int, TModel> */
         return $query->paginate($filter->perPage)
             ->appends(request()->query());
+    }
+
+    /**
+     * @return TModel
+     */
+    public function storeOrder(StoreOrderDTO $dto, int $accountId): Order
+    {
+        /** @var TModel */
+        return $this->query()->create([
+            'uuid' => $dto->uuid,
+            'account_id' => $accountId,
+            'side' => $dto->side,
+            'type' => $dto->type,
+            'currency' => $dto->currency,
+            'price' => $dto->price,
+            'amount' => $dto->amount,
+            'filled_amount' => 0,
+            'status' => 'new',
+        ]);
     }
 }

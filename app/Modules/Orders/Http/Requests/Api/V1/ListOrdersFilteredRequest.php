@@ -23,6 +23,7 @@ class ListOrdersFilteredRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'order_id'   => ['nullable', 'string'],
             'account_id' => ['nullable', 'integer'],
             'status'     => ['nullable', 'string', 'max:50'],
             'side'       => ['nullable', 'string', 'in:buy,sell'],
@@ -37,6 +38,7 @@ class ListOrdersFilteredRequest extends FormRequest
         $v = $this->validated();
 
         return new OrderFilterDTO(
+            orderId: $v['order_id'] ?? null,
             accountId: isset($v['account_id']) ? (int) $v['account_id'] : null,
             status: $v['status'] ?? null,
             side: $v['side'] ?? null,

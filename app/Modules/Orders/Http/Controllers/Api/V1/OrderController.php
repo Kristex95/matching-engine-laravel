@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Orders\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Accounts\Domain\Account;
 use App\Modules\Orders\Application\Services\OrderService;
 use App\Modules\Orders\Domain\Order;
 use App\Modules\Orders\Http\Requests\Api\V1\ListOrdersFilteredRequest;
+use App\Modules\Orders\Http\Requests\Api\V1\StoreOrderRequest;
 use App\Modules\Orders\Http\Resources\Api\V1\OrderResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +26,7 @@ class OrderController extends Controller
     {
         $dto = $request->toDto();
 
-        $orders = $this->orderService->getAllOrdersPaginated($dto);
+        $orders = $this->orderService->getAllActiveOrdersPaginated($dto);
 
         return OrderResource::collection($orders)
             ->response()
@@ -34,9 +36,13 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): void
+    public function store(StoreOrderRequest $request): JsonResponse
     {
-        // TODO
+        $order = $this->orderService->storeNewOrder($request->toDto(), Account::factory()->create()); // TODO change account
+
+        return (new OrderResource($order))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -65,5 +71,16 @@ class OrderController extends Controller
     public function destroy(Order $order): void
     {
         // TODO
+    }
+
+    public function ordersHistory(ListOrdersFilteredRequest $request): JsonResponse
+    {
+        $dto = $request->toDto();
+
+        $orders = $this->orderService->getAllOrdersPaginated($dto);
+
+        return OrderResource::collection($orders)
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 }

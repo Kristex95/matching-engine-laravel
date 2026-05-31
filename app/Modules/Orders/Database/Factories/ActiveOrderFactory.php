@@ -7,15 +7,14 @@ namespace App\Modules\Orders\Database\Factories;
 use App\Modules\Accounts\Domain\Account;
 use App\Modules\Balances\Domain\Currency;
 use App\Modules\Orders\Domain\ActiveOrder;
-use App\Modules\Orders\Domain\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Order>
+ * @extends Factory<ActiveOrder>
  */
-class OrderFactory extends Factory
+class ActiveOrderFactory extends Factory
 {
-    protected $model = Order::class;
+    protected $model = ActiveOrder::class;
 
     /**
      * Define the model's default state.
@@ -42,22 +41,5 @@ class OrderFactory extends Factory
             'filled_amount' => 0,
             'status' => 'new',
         ];
-    }
-
-    public function configure(): static
-    {
-        return $this->afterCreating(function (Order $order): void {
-            ActiveOrder::query()->create([
-                'uuid' => $order->uuid,
-                'account_id' => $order->account_id,
-                'side' => $order->side,
-                'type' => $order->type,
-                'currency' => $order->currency,
-                'price' => $order->price,
-                'amount' => $order->amount,
-                'filled_amount' => $order->filled_amount,
-                'status' => $order->status,
-            ]);
-        });
     }
 }
