@@ -149,7 +149,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-database-'),
+            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')) . '-database-'),
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 
@@ -179,6 +179,29 @@ return [
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
         ],
 
+        'streams' => [
+            // Повне з'єднання одним рядком (redis://...); якщо задано — перекриває host/port/password нижче.
+            'url' => env('REDIS_URL'),
+            // Хост Redis: у docker це ім'я сервісу `redis`, локально — 127.0.0.1.
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            // Користувач для Redis ACL (Redis 6+); без ACL — null.
+            'username' => env('REDIS_USERNAME'),
+            // Пароль (AUTH); у нас Redis без пароля — null.
+            'password' => env('REDIS_PASSWORD'),
+            // Внутрішній TCP-порт Redis у docker-мережі (не плутати з опублікованим на хост).
+            'port' => env('REDIS_PORT', '6379'),
+            // Номер логічної БД (0–15): кеш живе в DB 1, стріми — в DB 0, щоб redis-cli бачив їх без прапора -n.
+            'database' => env('REDIS_STREAMS_DB', '0'),
+            // Перекриваємо глобальний префікс `laravel-database-` порожнім — стрім зветься рівно `payments-events`.
+            'options' => ['prefix' => ''],
+            // Скільки разів клієнт повторить спробу при обриві з'єднання, перш ніж кинути помилку.
+            'max_retries' => env('REDIS_MAX_RETRIES', 3),
+            // Алгоритм паузи між повторами; jitter додає випадковість проти синхронного навантаження («thundering herd»).
+            'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
+            // Базова затримка (мс) перед першим повтором.
+            'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
+            // Верхня межа затримки (мс): пауза зростає, але не перевищить це значення.
+            'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
+        ],
     ],
-
 ];

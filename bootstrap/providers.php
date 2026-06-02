@@ -7,4 +7,5 @@ return [
     App\Modules\Orders\Providers\OrdersServiceProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
+    App\Modules\Outbox\Providers\OutboxServiceProvider::class,
 ];
