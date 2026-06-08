@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Orders\Tests\Feature\Controllers\Api\V1;
 
 use App\Modules\Orders\Domain\Order;
+use App\Modules\Users\Domain\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -15,6 +16,9 @@ class OrderApiTest extends TestCase
 
     public function test_order_index_structure(): void
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $order = Order::factory()->create();
 
         $response = $this->getJson('/api/v1/orders');
@@ -42,6 +46,9 @@ class OrderApiTest extends TestCase
 
     public function test_order_index_request_is_valid_and_exists(): void
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $order = Order::factory()->create();
 
         $response = $this->getJson('/api/v1/orders?' . http_build_query([
@@ -68,6 +75,9 @@ class OrderApiTest extends TestCase
 
     public function test_order_store_returns_201_and_creates_order_when_valid(): void
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $response = $this->postJson('/api/v1/orders', [
             'side' => 'buy',
             'type' => 'limit',
@@ -120,6 +130,9 @@ class OrderApiTest extends TestCase
 
     public function test_order_store_returns_422_when_creating_limit_order_without_price(): void
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $response = $this->postJson('/api/v1/orders', [
             'side' => 'buy',
             'type' => 'limit',
