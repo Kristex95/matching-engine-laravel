@@ -5,6 +5,9 @@ deptrac:
     - name: Auth
       collectors:
         - { type: classLike, value: ^App\\Modules\\Auth\\.* }
+    - name: Users
+      collectors:
+        - { type: classLike, value: ^App\\Modules\\Users\\.* }    
     - name: Accounts
       collectors:
         - { type: classLike, value: ^App\\Modules\\Accounts\\.* }
@@ -15,7 +18,8 @@ deptrac:
       collectors:
         - { type: classLike, value: ^App\\Modules\\Orders\\.* }
   ruleset:
-    Auth: []
-    Accounts: [Auth]
+    Users: []
+    Accounts: [Users]
+    Auth: [Accounts, Users]
     Balances: [Accounts]
     Orders: [Balances, Accounts]

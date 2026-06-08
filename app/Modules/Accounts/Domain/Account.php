@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounts\Domain;
 
 use App\Modules\Accounts\Database\Factories\AccountFactory;
-use App\Modules\Auth\Domain\User;
+use App\Modules\Users\Domain\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;

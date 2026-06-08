@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Auth\Database\Factories;
+namespace App\Modules\Users\Database\Factories;
 
-use App\Modules\Auth\Domain\User;
+use App\Modules\Users\Domain\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

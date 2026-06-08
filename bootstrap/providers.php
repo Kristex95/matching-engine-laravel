@@ -8,4 +8,5 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     App\Modules\Outbox\Providers\OutboxServiceProvider::class,
+    App\Modules\Users\Providers\UserServiceProvider::class,
 ];
