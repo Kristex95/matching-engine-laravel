@@ -13,6 +13,11 @@ class AccountService
         private AccountRepository $accountRepository,
     ) {}
 
+    public function getById(int $id): Account
+    {
+        return $this->accountRepository->findById($id);
+    }
+
     public function createAccount(): Account
     {
         $account = $this->accountRepository->newAccount();

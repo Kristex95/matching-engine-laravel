@@ -6,6 +6,7 @@ namespace App\Modules\Orders\Domain;
 
 use App\Modules\Accounts\Domain\Account;
 use App\Modules\Orders\Database\Factories\OrderFactory;
+use App\Modules\Orders\Scopes\OrderForCurrentAccountScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,11 @@ class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderForCurrentAccountScope());
+    }
 
     protected $table = 'orders';
 

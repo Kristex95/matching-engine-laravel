@@ -8,5 +8,6 @@ use App\Modules\Accounts\Domain\Account;
 
 interface AccountRepository
 {
+    public function findById(int $id): Account;
     public function newAccount(): Account;
 }
