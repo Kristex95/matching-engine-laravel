@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Orders\Tests\Feature\Controllers\Api\V1;
 
 use App\Modules\Accounts\Domain\Account;
+use App\Modules\Balances\Domain\Balance;
 use App\Modules\Orders\Domain\Order;
 use App\Modules\Orders\Tests\TestUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -130,6 +131,12 @@ class OrderApiTest extends TestCase
             'id' => 1,
             'account_id' => $account->id,
         ]);
+        $balance = Balance::factory()->create([
+            'account_id' => $account->id,
+            'currency'   => 'USDT',
+            'available'  => '100000',
+            'locked'     => '0',
+        ]);
         $this->actingAs($user);
 
         $response = $this->postJson('/api/v1/orders', [
@@ -205,6 +212,4 @@ class OrderApiTest extends TestCase
             ],
         ]);
     }
-
-
 }

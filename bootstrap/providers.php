@@ -9,4 +9,5 @@ return [
     App\Providers\TelescopeServiceProvider::class,
     App\Modules\Outbox\Providers\OutboxServiceProvider::class,
     App\Modules\Users\Providers\UserServiceProvider::class,
-];
+    App\Modules\Trade\Providers\TradeServiceProvider::class,
+];  

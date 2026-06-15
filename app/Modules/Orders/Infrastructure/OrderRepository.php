@@ -17,6 +17,8 @@ interface OrderRepository
      */
     public function findAll(): Collection;
     public function findById(int $id): Order;
+    public function findByUuid(string $uuid): Order;
+    public function findByUuidWithoutScopes(string $uuid): Order;
     /**
      * @return LengthAwarePaginator<int, Order>
      */

@@ -46,6 +46,21 @@ class EloquentOrderRepository implements OrderRepository
         return $this->query()->findOrFail($id);
     }
 
+    public function findByUuid(string $uuid): Order
+    {
+        return $this->query()
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+    }
+
+    public function findByUuidWithoutScopes(string $uuid): Order
+    {
+        return $this->query()
+            ->withoutGlobalScopes()
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+    }
+
     /**
      * @return LengthAwarePaginator<int, TModel>
      */
@@ -89,7 +104,7 @@ class EloquentOrderRepository implements OrderRepository
     public function storeOrder(StoreOrderDTO $dto, int $accountId): Order
     {
         /** @var TModel */
-        return $this->query()->create([
+        return $this->query()->forceCreate([
             'uuid' => $dto->uuid,
             'account_id' => $accountId,
             'side' => $dto->side,

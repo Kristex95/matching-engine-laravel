@@ -6,6 +6,7 @@ namespace App\Modules\Outbox\Application;
 
 use App\Modules\Outbox\Application\Contracts\EventStreamPublisher;
 use App\Modules\Outbox\Domain\Models\OutboxEvent;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -31,14 +32,23 @@ class OutboxApi
             'payload' => $payload,
         ]);
 
-        try {
-            $this->publisher->publish($event, 'matching-stream');
-        } catch (Throwable $e) {
-            Log::error('Outbox fast-track to Redis failed. Falling back to DB queue.', [
-                'event_id' => $event->id,
-                'error' => $e->getMessage(),
-            ]);
+        $publish = function () use ($event): void {
+            try {
+                $this->publisher->publish($event, 'matching-stream');
+            } catch (Throwable $e) {
+                Log::error('Outbox fast-track to Redis failed. Falling back to DB queue.', [
+                    'event_id' => $event->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        };
+
+        if (DB::transactionLevel() > 0) {
+            DB::afterCommit($publish);
+            return;
         }
+
+        $publish();
     }
 
     public function pendingCount(): int
