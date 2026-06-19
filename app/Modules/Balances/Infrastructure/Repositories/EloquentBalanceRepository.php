@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Balances\Infrastructure\Repositories;
 
+use App\Modules\Balances\Application\Exceptions\InsufficientBalanceException;
 use App\Modules\Balances\Domain\Balance;
 use Illuminate\Support\Facades\DB;
 
@@ -11,13 +12,38 @@ class EloquentBalanceRepository implements BalanceRepository
 {
     public function lockFunds(int $accountId, string $currency, string $amount): Balance
     {
-        Balance::query()
+        /*
+         * DOUBLE SPENDING DEMO: vulnerable lock implementation.
+         *
+         * To demonstrate double spending, temporarily replace the safe block below
+         * with this version. It keeps the conditional update, but ignores the
+         * affected row count. Under concurrent requests the second update can affect
+         * 0 rows, return as if it succeeded, and let the order be created unlocked.
+         *
+         * Balance::query()
+         *     ->where('account_id', $accountId)
+         *     ->where('currency', $currency)
+         *     ->where('available', '>=', $amount)
+         *     ->decrement('available', (float) $amount, [
+         *         'locked' => DB::raw("locked + {$amount}"),
+         *     ]);
+         *
+         * return $this->findByAccountIdAndCurrency($accountId, $currency);
+         */
+
+        $lockedRows = Balance::query()
             ->where('account_id', $accountId)
             ->where('currency', $currency)
             ->where('available', '>=', $amount)
             ->decrement('available', (float) $amount, [
                 'locked' => DB::raw("locked + {$amount}"),
             ]);
+
+        if ($lockedRows === 0) {
+            $balance = $this->findByAccountIdAndCurrency($accountId, $currency);
+
+            throw new InsufficientBalanceException($accountId, $balance->available, $amount);
+        }
 
         return $this->findByAccountIdAndCurrency($accountId, $currency);
     }

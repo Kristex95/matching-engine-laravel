@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\E2E;
+namespace Tests\Feature;
 
 use App\Modules\Accounts\Domain\Account;
 use App\Modules\Balances\Domain\Balance;
