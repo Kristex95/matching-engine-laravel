@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Balances\Application\Exceptions\InsufficientBalanceException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -41,6 +42,14 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'message' => 'Action is forbidden.',
             ], Response::HTTP_FORBIDDEN);
+        });
+
+        $exceptions->render(function (InsufficientBalanceException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], Response::HTTP_BAD_REQUEST);
+            }
         });
 
         $exceptions->render(function (Throwable $e, $request) {

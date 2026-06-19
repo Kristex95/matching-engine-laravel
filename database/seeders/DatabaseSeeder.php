@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Modules\Accounts\Database\Seeders\AccountSeeder;
 use App\Modules\Accounts\Domain\Account;
-use App\Modules\Auth\Domain\User;
 use App\Modules\Balances\Domain\Balance;
 use App\Modules\Orders\Domain\Order;
+use App\Modules\Users\Domain\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
