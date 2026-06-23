@@ -21,7 +21,7 @@ class OrderbookController extends Controller
 
         if (!$raw) {
             return response()->json([
-                'message' => 'Orderbook not found'
+                'message' => 'Orderbook not found',
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -29,7 +29,7 @@ class OrderbookController extends Controller
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return response()->json([
-                'message' => 'Corrupted orderbook data'
+                'message' => 'Corrupted orderbook data',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
