@@ -8,12 +8,15 @@ use App\Modules\Trade\Application\DTO\StoreTradeDTO;
 use App\Modules\Trade\Application\Services\TradeService;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class ConsumeTradesStream extends Command
 {
     protected $signature = 'stream:consume-trades';
+    private string $cacheKey = 'trades:recent';
+    private int $maxTradeCacheSize = 20;
 
     protected $description = 'Consume incoming trades from the Redis trades-stream';
 
@@ -96,11 +99,13 @@ class ConsumeTradesStream extends Command
                         if ($eventType === 'trade-executed' && isset($payload['payload'])) {
                             $tradeData = json_decode($payload['payload'], true);
 
-                            if ($tradeData) {
+                            if (is_array($tradeData)) {
                                 $dto = $this->buildTradeDto($tradeData);
                                 $this->tradeService->processNewTrade($dto);
 
                                 $this->line("Processed Trade: Taker {$tradeData['taker_order_id']} matched with Maker {$tradeData['maker_order_id']}");
+
+                                $this->cacheRecentTrade($redis, $tradeData);
                             }
                         }
 
@@ -124,18 +129,51 @@ class ConsumeTradesStream extends Command
     }
 
     /**
+     * @param array<string, mixed> $tradeData
+     */
+    private function cacheRecentTrade(PhpRedisConnection $redis, array $tradeData): void
+    {
+        $dynamicKey = $this->getCacheKeyForCurrency($tradeData);
+
+        $redis->executeRaw([
+            'LPUSH',
+            $dynamicKey,
+            json_encode($tradeData),
+        ]);
+
+        $redis->executeRaw([
+            'LTRIM',
+            $dynamicKey,
+            '0',
+            (string) ($this->maxTradeCacheSize - 1),
+        ]);
+    }
+
+    /**
+     * Helper to safely build the cache key (e.g., "trades:recent:BTC")
+     *
+     * @param array<string, mixed> $tradeData
+     */
+    private function getCacheKeyForCurrency(array $tradeData): string
+    {
+        $base = strtoupper((string) ($tradeData['base_currency'] ?? 'UNKNOWN'));
+
+        return "{$this->cacheKey}:{$base}";
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     private function buildTradeDto(array $data): StoreTradeDTO
     {
         Log::info($data);
         return new StoreTradeDTO(
-            takerOrderId:  (string) $data['taker_order_id'],
-            makerOrderId:  (string) $data['maker_order_id'],
-            price:         (string) $data['price'],
-            amount:        (string) $data['amount'],
+            takerOrderId: (string) $data['taker_order_id'],
+            makerOrderId: (string) $data['maker_order_id'],
+            price: (string) $data['price'],
+            amount: (string) $data['amount'],
             quoteCurrency: (string) $data['quote_currency'],
-            baseCurrency:  (string) $data['base_currency'],
+            baseCurrency: (string) $data['base_currency'],
         );
     }
 }

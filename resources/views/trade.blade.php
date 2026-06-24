@@ -13,8 +13,10 @@
                 <livewire:orders::form :symbol="$currency" />
             </div>
 
-            <div class="w-full md:w-80">
+            <div class="w-full md:w-80 flex flex-col gap-6">
                 <livewire:orderbook::tracker :symbol="$currency" />
+                
+                <livewire:trades::recent-trades :symbol="$currency" />
             </div>
 
         </div>

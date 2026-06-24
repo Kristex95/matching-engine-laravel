@@ -8,7 +8,9 @@ use App\Modules\Trade\Console\Commands\ConsumeTradesStream;
 use App\Modules\Trade\Console\Commands\RunDemoTradeWorkflow;
 use App\Modules\Trade\Infrastructure\Repositories\EloquentTradeRepository;
 use App\Modules\Trade\Infrastructure\Repositories\TradeRepository;
+use App\Modules\Trade\Livewire\RecentTrades;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class TradeServiceProvider extends ServiceProvider
 {
@@ -18,7 +20,11 @@ class TradeServiceProvider extends ServiceProvider
             TradeRepository::class,
             EloquentTradeRepository::class
         );
+
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'trades');
+        Livewire::component('trades::recent-trades', RecentTrades::class);
     }
+
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');

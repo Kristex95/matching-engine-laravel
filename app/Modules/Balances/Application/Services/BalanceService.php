@@ -16,7 +16,7 @@ class BalanceService
 
     /**
      * Get all currency balances for a given account.
-     * * @return Balance[]
+     * @return Balance[]
      */
     public function getBalancesByAccount(int $accountId): array
     {
