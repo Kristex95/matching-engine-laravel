@@ -14,6 +14,15 @@ class BalanceService
 {
     public function __construct(private BalanceRepository $balanceRepository) {}
 
+    /**
+     * Get all currency balances for a given account.
+     * * @return Balance[]
+     */
+    public function getBalancesByAccount(int $accountId): array
+    {
+        return $this->balanceRepository->findAllByAccountId($accountId);
+    }
+
     public function deposit(int $accountId, string $currency, string $amount): Balance
     {
         if (bccomp($amount, '0', 8) <= 0) {

@@ -72,6 +72,17 @@ class EloquentBalanceRepository implements BalanceRepository
         return $this->findByAccountIdAndCurrency($accountId, $currency);
     }
 
+    /**
+     * @return Balance[]
+     */
+    public function findAllByAccountId(int $accountId): array
+    {
+        return Balance::query()
+            ->where('account_id', $accountId)
+            ->get()
+            ->all();
+    }
+
     public function findByAccountIdAndCurrency(int $accountId, string $currency): Balance
     {
         return Balance::query()

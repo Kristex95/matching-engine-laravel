@@ -8,6 +8,10 @@ use App\Modules\Balances\Domain\Balance;
 
 interface BalanceRepository
 {
+    /**
+     * @return Balance[]
+     */
+    public function findAllByAccountId(int $accountId): array;
     public function findByAccountIdAndCurrency(int $accountId, string $currency): Balance;
     public function lockFunds(int $accountId, string $currency, string $amount): Balance;
     public function releaseFunds(int $accountId, string $currency, string $amount): Balance;

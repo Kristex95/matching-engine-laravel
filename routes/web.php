@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 Route::view('/', 'welcome');
 
@@ -19,5 +20,9 @@ Route::get('trade', function () {
 Route::get('trade/{currency}', function ($currency) {
     return view('trade', ['currency' => $currency]);
 })->name('trade');
+
+Volt::route('deposit', 'deposit')
+    ->middleware(['auth', 'verified'])
+    ->name('deposit');
 
 require __DIR__.'/auth.php';
