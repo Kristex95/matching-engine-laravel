@@ -11,8 +11,10 @@ use App\Modules\Orders\Infrastructure\ActiveOrderRepository;
 use App\Modules\Orders\Infrastructure\EloquentActiveOrderRepository;
 use App\Modules\Orders\Infrastructure\EloquentOrderRepository;
 use App\Modules\Orders\Infrastructure\OrderRepository;
+use App\Modules\Orders\Livewire\OrderForm;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class OrdersServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,9 @@ class OrdersServiceProvider extends ServiceProvider
         $this->app->bind(OrderRepository::class, fn () => new EloquentOrderRepository(Order::class));
 
         $this->app->bind(ActiveOrderRepository::class, fn () => new EloquentActiveOrderRepository(ActiveOrder::class));
+
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'orders');
+        Livewire::component('orders::form', OrderForm::class);
     }
 
     public function boot(): void

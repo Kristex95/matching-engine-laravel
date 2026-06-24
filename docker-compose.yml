@@ -9,6 +9,7 @@ services:
     working_dir: /var/www/html
     ports:
       - "8000:8000"
+      - "5173:5173"
     stdin_open: true
     tty: true
     depends_on:

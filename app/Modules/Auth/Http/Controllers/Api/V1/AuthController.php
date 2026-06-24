@@ -5,41 +5,30 @@ declare(strict_types=1);
 namespace App\Modules\Auth\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounts\Application\Services\AccountService;
+use App\Modules\Auth\Http\App\Services\AuthService;
 use App\Modules\Auth\Http\Requests\Api\V1\LoginRequest;
 use App\Modules\Auth\Http\Requests\Api\V1\RegisterRequest;
-use App\Modules\Users\Application\Services\UserService;
 use App\Modules\Users\Domain\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function __construct(
-        private UserService $userService,
-        private AccountService $accountService,
+        private AuthService $authService,
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
     {
         $dto = $request->toDto();
 
-        ['user' => $user, 'account' => $account] = DB::transaction(function () use ($dto): array {
-            $account = $this->accountService->createAccount();
+        // Offload all heavy lifting to the service layer
+        $result = $this->authService->register($dto);
 
-            $dto = $dto->withAccountId($account->id);
-
-            $user = $this->userService->createUser($dto);
-
-            return [
-                'user' => $user,
-                'account' => $account,
-            ];
-        });
-
-        $token = $user->createToken(name: 'api-token')->plainTextToken;
+        $user = $result['user'];
+        $account = $result['account'];
+        $token = $result['token'];
 
         return response()->json([
             'data' => [
