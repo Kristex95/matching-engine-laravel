@@ -14,7 +14,7 @@ Route::view('profile', 'profile')
 
 Route::get('trade', function () {
     return redirect()->route('trade', ['currency' => 'BTC']);
-});
+})->name('trade-default');
 
 Route::get('trade/{currency}', function ($currency) {
     return view('trade', ['currency' => $currency]);
