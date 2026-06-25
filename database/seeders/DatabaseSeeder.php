@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Modules\Accounts\Domain\Account;
 use App\Modules\Balances\Domain\Balance;
 use App\Modules\Orders\Domain\Order;
+use App\Modules\Trade\Database\seeders\TradeSeeder;
 use App\Modules\Users\Domain\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,6 +19,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $domainSeeders = app()->tagged('domain_seeders');
+
+        foreach ($domainSeeders as $seeder) {
+            $this->call(get_class($seeder));
+        }
+
         $account = Account::factory()->create();
 
         User::factory()->create([

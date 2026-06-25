@@ -5,12 +5,7 @@
             <div class="flex flex-col lg:flex-row gap-6 items-start">
                 
                 <div class="flex-1 w-full flex flex-col gap-6">
-                    <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-lg text-gray-100">
-                        <h2 class="text-2xl font-bold mb-2">Trading ({{ strtoupper($currency) }} / USDT)</h2>
-                        <p class="text-neutral-400 text-sm">
-                            Specify execution parameters below to commit, lock balance allocations, and broadcast instructions directly to the matching engine core.
-                        </p>
-                    </div>
+                    <livewire:trading.crypto-chart :symbol="$currency" />
 
                     <livewire:orders::form :symbol="$currency" />
                 </div>
