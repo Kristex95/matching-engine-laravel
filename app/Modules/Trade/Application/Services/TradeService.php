@@ -10,6 +10,7 @@ use App\Modules\Orders\Domain\Order;
 use App\Modules\Trade\Application\DTO\StoreTradeDTO;
 use App\Modules\Trade\Domain\Trade;
 use App\Modules\Trade\Infrastructure\Repositories\TradeRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -32,6 +33,7 @@ class TradeService
             'baseCurrency' => $dto->baseCurrency,
             'quoteCurrency' => $dto->quoteCurrency,
         ]);
+
         return DB::transaction(function () use ($dto) {
             $existingTrade = $this->tradeRepository->findExistingTrade($dto);
 
@@ -39,7 +41,6 @@ class TradeService
                 return $existingTrade;
             }
 
-            // Retrieve maker and taker orders
             $makerOrder = $this->orderService->getByUuidForTrading($dto->makerOrderId);
             $takerOrder = $this->orderService->getByUuidForTrading($dto->takerOrderId);
 
@@ -49,7 +50,11 @@ class TradeService
             $this->settleBalancesForOrder($takerOrder, $dto);
             Log::info("Taker balance updated");
 
-            return $this->tradeRepository->storeTrade($dto);
+            return $this->tradeRepository->storeTrade(
+                $dto,
+                (int) $takerOrder->account_id,
+                (int) $makerOrder->account_id
+            );
         });
     }
 
@@ -86,5 +91,13 @@ class TradeService
         }
 
         throw new RuntimeException("Invalid order side encountered for order {$order->uuid}: {$order->side}");
+    }
+
+    /**
+     * @return LengthAwarePaginator<int, Trade>
+     */
+    public function getAllPaginated(int $accountId): LengthAwarePaginator
+    {
+        return $this->tradeRepository->getPaginatedByAccountId($accountId);
     }
 }

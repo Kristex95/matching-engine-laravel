@@ -6,6 +6,7 @@ namespace App\Modules\Trade\Infrastructure\Repositories;
 
 use App\Modules\Trade\Application\DTO\StoreTradeDTO;
 use App\Modules\Trade\Domain\Trade;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class EloquentTradeRepository implements TradeRepository
 {
@@ -19,13 +20,26 @@ class EloquentTradeRepository implements TradeRepository
             ->first();
     }
 
-    public function storeTrade(StoreTradeDTO $dto): Trade
+    public function storeTrade(StoreTradeDTO $dto, int $takerAccountId, int $makerAccountId): Trade
     {
         return Trade::query()->create([
-            'taker_order_id' => $dto->takerOrderId,
-            'maker_order_id' => $dto->makerOrderId,
-            'price'          => $dto->price,
-            'amount'         => $dto->amount,
+            'taker_account_id' => $takerAccountId,
+            'maker_account_id' => $makerAccountId,
+            'taker_order_id'   => $dto->takerOrderId,
+            'maker_order_id'   => $dto->makerOrderId,
+            'price'            => $dto->price,
+            'amount'           => $dto->amount,
         ]);
+    }
+
+    public function getPaginatedByAccountId(int $accountId): LengthAwarePaginator
+    {
+        return Trade::query()
+            ->where(function ($query) use ($accountId): void {
+                $query->where('maker_account_id', $accountId)
+                    ->orWhere('taker_account_id', $accountId);
+            })
+            ->paginate(15)
+            ->appends(request()->query());
     }
 }

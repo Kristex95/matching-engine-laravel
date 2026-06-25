@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int    $taker_account_id
+ * @property int    $maker_account_id
  * @property string $taker_order_id
  * @property string $maker_order_id
  * @property string $price
@@ -19,6 +21,8 @@ use Illuminate\Support\Carbon;
 class Trade extends Model
 {
     protected $fillable = [
+        'taker_account_id',
+        'maker_account_id',
         'taker_order_id',
         'maker_order_id',
         'price',

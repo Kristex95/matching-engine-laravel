@@ -28,7 +28,7 @@
         @elseif($activeTab === 'history-orders')
             @livewire('trading.history-orders', key('tab-order-history'))
         @elseif($activeTab === 'trade-history')
-            {{-- Analogous for other tabs... --}}
+            @livewire('trading.trade-history', key('tab-trade-history'))
         @elseif($activeTab === 'balances')
             @livewire('trading.balances', ['symbol' => $symbol ?? 'BTC'], key('tab-balances'))
         @endif
