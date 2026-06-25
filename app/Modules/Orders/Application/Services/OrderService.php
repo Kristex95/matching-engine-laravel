@@ -108,6 +108,9 @@ class OrderService
             } elseif ($dto->status === "partially_filled") {
                 $this->activeOrderRepository->updateOrder($dto);
                 $this->orderRepository->updateOrder($dto);
+            } elseif ($dto->status === "cancelled") {
+                $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
+                $this->orderRepository->updateOrder($dto);
             }
         });
     }
