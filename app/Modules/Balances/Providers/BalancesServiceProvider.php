@@ -6,8 +6,10 @@ namespace App\Modules\Balances\Providers;
 
 use App\Modules\Balances\Infrastructure\Repositories\BalanceRepository;
 use App\Modules\Balances\Infrastructure\Repositories\EloquentBalanceRepository;
+use App\Modules\Balances\Livewire\BalancesTab;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class BalancesServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,8 @@ class BalancesServiceProvider extends ServiceProvider
             BalanceRepository::class,
             EloquentBalanceRepository::class
         );
+
+        Livewire::component('trading.balances', BalancesTab::class);
     }
 
     public function boot(): void

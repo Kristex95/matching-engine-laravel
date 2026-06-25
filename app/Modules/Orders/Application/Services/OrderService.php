@@ -8,6 +8,7 @@ use App\Modules\Accounts\Domain\Account;
 use App\Modules\Balances\Domain\Currency;
 use App\Modules\Balances\PublicApi\BalancesApi;
 use App\Modules\Orders\Application\DTO\OrderFilterDTO;
+use App\Modules\Orders\Application\DTO\OrderUpdateDTO;
 use App\Modules\Orders\Application\DTO\StoreOrderDTO;
 use App\Modules\Orders\Domain\Order;
 use App\Modules\Orders\Infrastructure\ActiveOrderRepository;
@@ -95,6 +96,19 @@ class OrderService
             );
 
             return $order;
+        });
+    }
+
+    public function processOrderUpdate(OrderUpdateDTO $dto): void
+    {
+        DB::transaction(function () use ($dto): void {
+            if ($dto->status === "filled" || $dto->status === "cancelled") {
+                $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
+                $this->orderRepository->updateOrder($dto);
+            } elseif ($dto->status === "partially_filled") {
+                $this->activeOrderRepository->updateOrder($dto);
+                $this->orderRepository->updateOrder($dto);
+            }
         });
     }
 }

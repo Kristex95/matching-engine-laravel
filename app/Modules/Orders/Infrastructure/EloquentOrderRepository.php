@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Orders\Infrastructure;
 
 use App\Modules\Orders\Application\DTO\OrderFilterDTO;
+use App\Modules\Orders\Application\DTO\OrderUpdateDTO;
 use App\Modules\Orders\Application\DTO\StoreOrderDTO;
 use App\Modules\Orders\Domain\Order;
 use Illuminate\Database\Eloquent\Builder;
@@ -115,5 +116,45 @@ class EloquentOrderRepository implements OrderRepository
             'filled_amount' => 0,
             'status' => 'new',
         ]);
+    }
+
+    public function updateOrder(OrderUpdateDTO $dto): Order
+    {
+        $order = $this->query()
+            ->withoutGlobalScopes()
+            ->where('uuid', $dto->uuid)
+            ->firstOrFail();
+
+        $updateData = [];
+
+        if ($dto->status !== null) {
+            $updateData['status'] = $dto->status;
+        }
+
+        if ($dto->filledAmount !== null) {
+            $order->increment('filled_amount', (float) $dto->filledAmount);
+        }
+
+        if (!empty($updateData)) {
+            $order->update($updateData);
+        }
+
+        return $order;
+    }
+
+    public function deleteOrderById(int $id): void
+    {
+        $this->query()
+            ->withoutGlobalScopes()
+            ->where('id', $id)
+            ->delete();
+    }
+
+    public function deleteOrderByUuid(string $uuid): void
+    {
+        $this->query()
+            ->withoutGlobalScopes()
+            ->where('uuid', $uuid)
+            ->delete();
     }
 }
