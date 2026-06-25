@@ -1,12 +1,12 @@
-<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow text-gray-900 dark:text-gray-100 w-full max-w-md">
+<div class="p-4 shadow text-gray-900 dark:text-gray-100 w-full max-w-md">
 
-    <div class="grid grid-cols-2 gap-2 mb-6 bg-gray-100 dark:bg-gray-900 p-1 rounded-md">
+    <div class="grid grid-cols-2 gap-2 mb-6 bg-gray-100 dark:bg-neutral-950 border border-gray-300 dark:border-gray-700 p-1 rounded-md">
         <button type="button" wire:click="$set('side', 'buy')"
             class="py-2 text-center rounded font-semibold text-sm transition {{ $side === 'buy' ? 'bg-green-500 text-white' : 'text-gray-500' }}">
             Buy {{ $symbol }}
         </button>
         <button type="button" wire:click="$set('side', 'sell')"
-            class="py-2 text-center rounded font-semibold text-sm transition {{ $side === 'sell' ? 'bg-red-500 text-white' : 'text-gray-500' }}">
+            class="py-2 text-center rounded font-semibold text-sm transition {{ $side === 'sell' ? 'bg-red-500 text-white' : 'text-gray-300' }}">
             Sell {{ $symbol }}
         </button>
     </div>
@@ -26,7 +26,7 @@
         <div>
             <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Execution Mode</label>
             <select wire:model.live="type"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded p-2.5 text-sm">
+                class="w-full bg-gray-50 dark:bg-neutral-950 border border-gray-300 dark:border-gray-700 rounded p-2.5 text-sm">
                 <option value="limit">Limit Order</option>
                 <option value="market">Market Order</option>
             </select>
@@ -36,7 +36,7 @@
             <div>
                 <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Target Price (USDT)</label>
                 <input type="number" step="any" wire:model="price" placeholder="0.00"
-                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    class="w-full bg-gray-50 dark:bg-neutral-950 border border-gray-300 dark:border-gray-700 rounded p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500">
                 @error('price')
                     <span class="text-xs text-red-500">{{ $message }}</span>
                 @enderror
@@ -46,7 +46,7 @@
         <div>
             <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Quantity ({{ $symbol }})</label>
             <input type="number" step="any" wire:model="amount" placeholder="0.00"
-                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500">
+                class="w-full bg-gray-50 dark:bg-neutral-950 border border-gray-300 dark:border-gray-700 rounded p-2.5 text-sm focus:ring-blue-500 focus:border-blue-500">
             @error('amount')
                 <span class="text-xs text-red-500">{{ $message }}</span>
             @enderror

@@ -32,7 +32,7 @@
                             <td class="py-3 px-4 font-mono text-gray-300">{{ $order->amount }}</td>
                             <td class="py-3 px-4 font-mono text-gray-300">{{ $order->filled_amount }}</td>
                             <td class="py-3 px-4 font-mono text-gray-500">{{ $order->status }}</td>
-                            <td class="py-3 px-4 text-right">
+                            <td class="py-2 px-4 text-right">
                                 <button wire:click="cancelOrder('{{ $order->uuid }}')"
                                     class="text-red-500/80 hover:text-red-500 font-medium transition text-[11px] bg-red-500/10 px-2 py-0.5 rounded-sm">
                                     Cancel

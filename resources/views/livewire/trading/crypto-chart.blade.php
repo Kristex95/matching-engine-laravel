@@ -1,5 +1,5 @@
-<div class="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-4">
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-4 select-none">
+<div class="w-full h-full bg-neutral-900 p-4 flex flex-col">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4 select-none flex-none">
         
         <div class="flex items-center gap-4">
             <div class="text-sm font-bold text-neutral-100 tracking-wider bg-neutral-950 px-3 py-1 border border-neutral-800 rounded">
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div wire:ignore style="height: 400px; position: relative;">
+    <div wire:ignore class="flex-1 relative min-h-0 w-full">
         <canvas id="cryptoChartCanvas"></canvas>
     </div>
 
@@ -105,6 +105,9 @@
                             intersect: false,
                         },
                         plugins: {
+                            legend: {
+                                display: false
+                            },
                             tooltip: {
                                 enabled: false
                             }
@@ -142,7 +145,7 @@
                                     elClose.textContent = formatPrice(rawPoint.c);
 
                                     const isUp = rawPoint.c >= rawPoint.o;
-                                    const panelColor = isUp ? '#26a69a' : '#ef5350';
+                                    const panelColor = isUp ? '#4ade80' : '#f87171';
                                     elOpen.style.color = elHigh.style.color = elLow.style.color =
                                         elClose.style.color = panelColor;
                                 }
