@@ -1,14 +1,17 @@
 <div class="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-4">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-4 select-none">
-        <div class="flex gap-2">
-            <button wire:click="changeInterval('1m')"
-                class="px-3 py-1 text-xs rounded {{ $interval === '1m' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">1M</button>
-            <button wire:click="changeInterval('5m')"
-                class="px-3 py-1 text-xs rounded {{ $interval === '5m' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">5M</button>
-            <button wire:click="changeInterval('1h')"
-                class="px-3 py-1 text-xs rounded {{ $interval === '1h' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">1H</button>
-            <button wire:click="changeInterval('1d')"
-                class="px-3 py-1 text-xs rounded {{ $interval === '1d' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">1D</button>
+        
+        <div class="flex items-center gap-4">
+            <div class="text-sm font-bold text-neutral-100 tracking-wider bg-neutral-950 px-3 py-1 border border-neutral-800 rounded">
+                {{ $selectedCurrency }}
+            </div>
+
+            <div class="flex gap-2">
+                <button wire:click="changeInterval('1m')" class="px-3 py-1 text-xs rounded {{ $interval === '1m' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">1M</button>
+                <button wire:click="changeInterval('5m')" class="px-3 py-1 text-xs rounded {{ $interval === '5m' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">5M</button>
+                <button wire:click="changeInterval('1h')" class="px-3 py-1 text-xs rounded {{ $interval === '1h' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">1H</button>
+                <button wire:click="changeInterval('1d')" class="px-3 py-1 text-xs rounded {{ $interval === '1d' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-400' }}">1D</button>
+            </div>
         </div>
 
         <div id="ohlcDisplayPanel" class="flex gap-4 text-xs font-mono text-neutral-400">

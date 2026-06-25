@@ -29,6 +29,7 @@ class EloquentTradeRepository implements TradeRepository
             'maker_order_id'   => $dto->makerOrderId,
             'price'            => $dto->price,
             'amount'           => $dto->amount,
+            'currency'         => $dto->baseCurrency,
         ]);
     }
 

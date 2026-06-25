@@ -13,6 +13,7 @@ use Carbon\Carbon;
 class Chart extends Component
 {
     public string $interval = '1h'; 
+    public string $selectedCurrency = 'BTC'; // Dynamic fallback property
 
     protected array $intervals = [
         '1m'  => ['format' => '%Y-%m-%d %H:%i:00', 'sub' => 'subHours', 'amount' => 2,   'step' => 'addMinute'],
@@ -20,6 +21,13 @@ class Chart extends Component
         '1h'  => ['format' => '%Y-%m-%d %H:00:00', 'sub' => 'subDays',  'amount' => 7,   'step' => 'addHour'],
         '1d'  => ['format' => '%Y-%m-%d 00:00:00', 'sub' => 'subDays',  'amount' => 30,  'step' => 'addDay'],
     ];
+
+    public function mount(?string $symbol = null): void
+    {
+        if ($symbol) {
+            $this->selectedCurrency = $symbol;
+        }
+    }
 
     public function changeInterval(string $newInterval): void
     {
@@ -47,6 +55,7 @@ class Chart extends Component
                 DB::raw("CAST(SUBSTRING_INDEX(MIN(CONCAT(created_at, '_', price)), '_', -1) AS DECIMAL(16,8)) as open"),
                 DB::raw("CAST(SUBSTRING_INDEX(MAX(CONCAT(created_at, '_', price)), '_', -1) AS DECIMAL(16,8)) as close"),
             ])
+            ->where('currency', $this->selectedCurrency)
             ->where('created_at', '>=', $threshold)
             ->groupBy(DB::raw($dateBucketExpr))
             ->orderBy('time_bucket', 'asc')
@@ -58,7 +67,7 @@ class Chart extends Component
 
         $keyedData = [];
         foreach ($rawTrades as $trade) {
-            $keyedData[$trade->time_bucket] = [
+            $keyedData[trim($trade->time_bucket)] = [
                 'o' => (float) $trade->open,
                 'h' => (float) $trade->high,
                 'l' => (float) $trade->low,
@@ -68,12 +77,10 @@ class Chart extends Component
 
         $startTime = Carbon::parse($rawTrades->first()->time_bucket);
         $endTime = now();
-        
         $filledChartData = [];
         $lastKnownPrice = null;
 
         while ($startTime->lessThanOrEqualTo($endTime)) {
-            
             if ($this->interval === '5m') {
                 $bucketStr = $startTime->format('Y-m-d H:') . str_pad((string)(floor($startTime->minute / 5) * 5), 2, '0', STR_PAD_LEFT) . ':00';
             } else {
@@ -81,9 +88,11 @@ class Chart extends Component
                 $bucketStr = $startTime->format($formatMap[$this->interval] ?? 'Y-m-d H:00:00');
             }
 
+            $bucketStr = trim($bucketStr);
+
             if (isset($keyedData[$bucketStr])) {
                 $candle = $keyedData[$bucketStr];
-                $lastKnownPrice = $candle['c'];
+                $lastKnownPrice = $candle['c']; 
             } else {
                 $candle = [
                     'o' => $lastKnownPrice ?? 0.0,
@@ -101,7 +110,6 @@ class Chart extends Component
                 'c' => $candle['c'],
             ];
 
-            // Advance loop pointer dynamically based on interval configuration
             if ($this->interval === '5m') {
                 $startTime->addMinutes(5);
             } else {
@@ -125,9 +133,11 @@ class Chart extends Component
 
     public function render(): View
     {
+        $chartUnitMap = ['1m' => 'minute', '5m' => 'minute', '1h' => 'hour', '1d' => 'day'];
+
         return view('livewire.trading.crypto-chart', [
             'initialData' => $this->getChartData(),
-            'initialUnit' => $this->interval === '1d' ? 'day' : ($this->interval === '1h' ? 'hour' : 'minute')
+            'initialUnit' => $chartUnitMap[$this->interval] ?? 'hour'
         ]);
     }
 }

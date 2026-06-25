@@ -2,6 +2,7 @@
 
 namespace App\Modules\Trade\Database\seeders;
 
+use App\Modules\Accounts\Domain\Account;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -22,6 +23,9 @@ class TradeSeeder extends Seeder
         $totalDaysToSeed = 31;
         $currentPrice = 50000.0;
         $insertData = [];
+
+        $account = Account::factory()->create();
+        $accountId = $account->id;
 
         for ($day = $totalDaysToSeed; $day >= 0; $day--) {
             for ($hour = 0; $hour < 24; $hour++) {
@@ -45,12 +49,13 @@ class TradeSeeder extends Seeder
                             ->setSecond(rand(0, 59));
 
                         $insertData[] = [
-                            'taker_account_id' => 1,
-                            'maker_account_id' => 1,
+                            'taker_account_id' => $accountId,
+                            'maker_account_id' => $accountId,
                             'taker_order_id'   => Str::uuid()->toString(),
                             'maker_order_id'   => Str::uuid()->toString(),
                             'price'            => round($currentPrice, 8),
                             'amount'           => round(rand(1, 500) / 100, 8),
+                            'currency'         => 'BTC',
                             'created_at'       => $timestamp,
                             'updated_at'       => $timestamp,
                         ];
@@ -72,12 +77,13 @@ class TradeSeeder extends Seeder
                             ->setSecond(rand(0, 59));
 
                         $insertData[] = [
-                            'taker_account_id' => 1,
-                            'maker_account_id' => 1,
+                            'taker_account_id' => $accountId,
+                            'maker_account_id' => $accountId,
                             'taker_order_id'   => Str::uuid()->toString(),
                             'maker_order_id'   => Str::uuid()->toString(),
                             'price'            => round($currentPrice, 8),
                             'amount'           => round(rand(5, 1000) / 100, 8),
+                            'currency'         => 'BTC',
                             'created_at'       => $timestamp,
                             'updated_at'       => $timestamp,
                         ];
