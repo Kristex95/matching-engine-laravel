@@ -15,7 +15,6 @@ class OpenOrders extends Component
     use WithPagination;
 
     public string $symbol;
-    private OrderService $orderService;
 
     public function mount(string $symbol = 'BTC'): void
     {
@@ -24,7 +23,6 @@ class OpenOrders extends Component
 
     public function render(OrderService $orderService): View
     {
-        $this->orderService = $orderService;
         $filterDto = new OrderFilterDTO(
             currency: $this->symbol
         );

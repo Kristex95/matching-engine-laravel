@@ -1,5 +1,5 @@
 <div wire:poll.1s="fetchOrderbook" class="text-white font-mono h-full flex pl-2 py-2 flex-col justify-between">
-    
+
     <div class="grid grid-cols-3 text-[10px] font-bold text-neutral-500 uppercase tracking-wider pb-2 pr-2 border-b border-neutral-800/60 flex-none select-none">
         <span class="text-left">Price</span>
         <span class="text-center">Amount</span>

@@ -14,7 +14,6 @@ use App\Modules\Orders\Domain\Order;
 use App\Modules\Orders\Infrastructure\ActiveOrderRepository;
 use App\Modules\Orders\Infrastructure\OrderRepository;
 use App\Modules\Outbox\Application\OutboxApi;
-use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -149,7 +148,7 @@ class OrderService
                 $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
                 $this->orderRepository->updateOrder($dto);
             } else {
-                Log::info('Unknown order update status', $dto->status);
+                Log::info('Unknown order update status', ['status' => $dto->status]);
             }
         });
     }
