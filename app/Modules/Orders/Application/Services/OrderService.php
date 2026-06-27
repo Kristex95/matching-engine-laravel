@@ -14,8 +14,10 @@ use App\Modules\Orders\Domain\Order;
 use App\Modules\Orders\Infrastructure\ActiveOrderRepository;
 use App\Modules\Orders\Infrastructure\OrderRepository;
 use App\Modules\Outbox\Application\OutboxApi;
+use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -51,6 +53,11 @@ class OrderService
     public function getByUuid(string $uuid): Order
     {
         return $this->orderRepository->findByUuid($uuid);
+    }
+
+    public function getActiveByUuid(string $uuid): Order
+    {
+        return $this->activeOrderRepository->findByUuid($uuid);
     }
 
     public function getByUuidForTrading(string $uuid): Order
@@ -99,18 +106,50 @@ class OrderService
         });
     }
 
+    public function cancelOrder(string $uuid): void
+    {
+        $order = $this->getActiveByUuid($uuid);
+        $this->outbox->record(
+            aggregateType: 'Order',
+            aggregateId: $order->uuid,
+            eventType: 'order-cancelled',
+            payload: [
+                'order_id' => $order->uuid,
+                'currency' => $order->currency,
+                'amount'   => $order->amount,
+            ]
+        );
+    }
+
     public function processOrderUpdate(OrderUpdateDTO $dto): void
     {
         DB::transaction(function () use ($dto): void {
-            if ($dto->status === "filled" || $dto->status === "cancelled") {
+            if ($dto->status === "filled") {
                 $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
                 $this->orderRepository->updateOrder($dto);
             } elseif ($dto->status === "partially_filled") {
                 $this->activeOrderRepository->updateOrder($dto);
                 $this->orderRepository->updateOrder($dto);
             } elseif ($dto->status === "cancelled") {
+                $order = $this->activeOrderRepository->findByUuidWithoutScopes($dto->uuid);
+                if ($order->side === 'buy') {
+                    $releaseCurrency = Currency::USDT->value;
+                    $releaseAmount = bcmul($order->amount, $order->price ?? '0', 8);
+                } else {
+                    $releaseCurrency = $order->currency;
+                    $releaseAmount = $order->amount;
+                }
+
+                $this->balanceApi->releaseLockedFunds(
+                    accountId: $order->account_id,
+                    currency: $releaseCurrency,
+                    amount: $releaseAmount,
+                );
+
                 $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
                 $this->orderRepository->updateOrder($dto);
+            } else {
+                Log::info('Unknown order update status', $dto->status);
             }
         });
     }

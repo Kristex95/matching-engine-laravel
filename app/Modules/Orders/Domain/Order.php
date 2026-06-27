@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $type
  * @property string $currency
  * @property string $price
- * @property float $amount
- * @property float $filled_amount
+ * @property string $amount
+ * @property string $filled_amount
  * @property string $status
  */
 class Order extends Model
@@ -49,6 +49,8 @@ class Order extends Model
 
     protected $casts = [
         'price' => 'string',
+        'amount' => 'string',
+        'filled_amount' => 'string',
     ];
 
     /**

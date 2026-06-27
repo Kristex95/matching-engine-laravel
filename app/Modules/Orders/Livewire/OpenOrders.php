@@ -15,6 +15,7 @@ class OpenOrders extends Component
     use WithPagination;
 
     public string $symbol;
+    private OrderService $orderService;
 
     public function mount(string $symbol = 'BTC'): void
     {
@@ -23,6 +24,7 @@ class OpenOrders extends Component
 
     public function render(OrderService $orderService): View
     {
+        $this->orderService = $orderService;
         $filterDto = new OrderFilterDTO(
             currency: $this->symbol
         );
@@ -32,5 +34,10 @@ class OpenOrders extends Component
         return view('livewire.trading.open-orders', [
             'orders' => $orders,
         ]);
+    }
+
+    public function cancelOrder(string $uuid, OrderService $orderService): void
+    {
+        $orderService->cancelOrder($uuid);
     }
 }
