@@ -133,6 +133,19 @@ class OrderService
             } elseif ($dto->status === "partially_filled") {
                 if ($order->type === 'market') {
                     $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
+
+                    if ($order->side === 'buy') {
+                        $releaseCurrency = Currency::USDT->value;
+                    } else {
+                        $releaseCurrency = $order->currency;
+                    }
+                    $releaseAmount = bcsub($order->amount, $dto->filledAmount, 8);
+
+                    $this->balanceApi->releaseLockedFunds(
+                        accountId: $order->account_id,
+                        currency: $releaseCurrency,
+                        amount: $releaseAmount,
+                    );
                 } else {
                     $this->activeOrderRepository->updateOrder($dto);
                 }
