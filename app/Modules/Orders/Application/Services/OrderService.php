@@ -10,6 +10,7 @@ use App\Modules\Balances\PublicApi\BalancesApi;
 use App\Modules\Orders\Application\DTO\OrderFilterDTO;
 use App\Modules\Orders\Application\DTO\OrderUpdateDTO;
 use App\Modules\Orders\Application\DTO\StoreOrderDTO;
+use App\Modules\Orders\Domain\Events\OrderUpdateNotificationEvent;
 use App\Modules\Orders\Domain\Order;
 use App\Modules\Orders\Infrastructure\ActiveOrderRepository;
 use App\Modules\Orders\Infrastructure\OrderRepository;
@@ -124,11 +125,12 @@ class OrderService
     public function processOrderUpdate(OrderUpdateDTO $dto): void
     {
         DB::transaction(function () use ($dto): void {
+            $order = $this->orderRepository->findByUuidWithoutScopes($dto->uuid);
+
             if ($dto->status === "filled") {
                 $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
                 $this->orderRepository->updateOrder($dto);
             } elseif ($dto->status === "partially_filled") {
-                $order = $this->activeOrderRepository->findByUuidWithoutScopes($dto->uuid);
                 if ($order->type === 'market') {
                     $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
                 } else {
@@ -136,7 +138,6 @@ class OrderService
                 }
                 $this->orderRepository->updateOrder($dto);
             } elseif ($dto->status === "cancelled") {
-                $order = $this->activeOrderRepository->findByUuidWithoutScopes($dto->uuid);
                 if ($order->side === 'buy') {
                     $releaseCurrency = Currency::USDT->value;
                     $releaseAmount = bcmul($order->amount, $order->price ?? '0', 8);
@@ -156,6 +157,9 @@ class OrderService
             } else {
                 Log::info('Unknown order update status', ['status' => $dto->status]);
             }
+
+            $message = "Order {$order->uuid} for {$order->amount} {$order->currency} was marked as {$dto->status}.";
+            event(new OrderUpdateNotificationEvent($order->account_id, $message));
         });
     }
 }

@@ -15,3 +15,6 @@ php artisan config:clear
 
 echo "Starting Supervisor..."
 exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+
+echo "Starting Reverb..."
+php artisan reverb:start --port=8081

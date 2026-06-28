@@ -15,6 +15,7 @@ use App\Modules\Orders\Infrastructure\OrderRepository;
 use App\Modules\Orders\Livewire\HistoryOrders;
 use App\Modules\Orders\Livewire\OpenOrders;
 use App\Modules\Orders\Livewire\OrderForm;
+use App\Modules\Orders\Livewire\OrderNotificationBanner;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -25,14 +26,15 @@ class OrdersServiceProvider extends ServiceProvider
     {
         $this->app->singleton(OrderService::class);
 
-        $this->app->bind(OrderRepository::class, fn () => new EloquentOrderRepository(Order::class));
+        $this->app->bind(OrderRepository::class, fn() => new EloquentOrderRepository(Order::class));
 
-        $this->app->bind(ActiveOrderRepository::class, fn () => new EloquentActiveOrderRepository(ActiveOrder::class));
+        $this->app->bind(ActiveOrderRepository::class, fn() => new EloquentActiveOrderRepository(ActiveOrder::class));
 
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'orders');
         Livewire::component('orders::form', OrderForm::class);
         Livewire::component('trading.open-orders', OpenOrders::class);
         Livewire::component('trading.history-orders', HistoryOrders::class);
+        Livewire::component('orders::notification-banner', OrderNotificationBanner::class);
     }
 
     public function boot(): void
@@ -43,6 +45,10 @@ class OrdersServiceProvider extends ServiceProvider
             ->name('api.v1.')
             ->prefix('api/v1')
             ->group(__DIR__ . '/../Routes/api.php');
+
+        if (file_exists(__DIR__ . '/../Routes/channel.php')) {
+            require __DIR__ . '/../Routes/channel.php';
+        }
 
         $this->commands([
             ConsumeOrderUpdatesStream::class,

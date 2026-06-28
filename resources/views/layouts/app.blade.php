@@ -30,6 +30,7 @@
             <!-- Page Content -->
             <main>
                 {{ $slot }}
+                @livewire('orders::notification-banner')
             </main>
         </div>
     </body>

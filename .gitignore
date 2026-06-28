@@ -26,3 +26,5 @@ Thumbs.db
 .php-cs-fixer.cache
 /coverage
 .deptrac.cache
+composer.lock
+package-lock.json
