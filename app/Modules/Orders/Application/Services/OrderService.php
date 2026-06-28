@@ -92,12 +92,13 @@ class OrderService
                 aggregateId: $order->uuid,
                 eventType: 'order-created',
                 payload: [
-                    'order_id' => $order->uuid,
-                    'side'     => $order->side,
-                    'type'     => $order->type,
-                    'currency' => $order->currency,
-                    'price'    => $order->price,
-                    'amount'   => $order->amount,
+                    'order_id'   => $order->uuid,
+                    'account_id' => $order->account_id,
+                    'side'       => $order->side,
+                    'type'       => $order->type,
+                    'currency'   => $order->currency,
+                    'price'      => $order->price,
+                    'amount'     => $order->amount,
                 ]
             );
 
@@ -127,7 +128,12 @@ class OrderService
                 $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
                 $this->orderRepository->updateOrder($dto);
             } elseif ($dto->status === "partially_filled") {
-                $this->activeOrderRepository->updateOrder($dto);
+                $order = $this->activeOrderRepository->findByUuidWithoutScopes($dto->uuid);
+                if ($order->type === 'market') {
+                    $this->activeOrderRepository->deleteOrderByUuid($dto->uuid);
+                } else {
+                    $this->activeOrderRepository->updateOrder($dto);
+                }
                 $this->orderRepository->updateOrder($dto);
             } elseif ($dto->status === "cancelled") {
                 $order = $this->activeOrderRepository->findByUuidWithoutScopes($dto->uuid);
