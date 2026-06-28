@@ -10,6 +10,7 @@
                 <thead>
                     <tr class="border-b border-neutral-800 text-gray-500 font-medium tracking-wider">
                         <th class="py-2 px-4">Time</th>
+                        <th class="py-2 px-4">Currency</th>
                         <th class="py-2 px-4">Side</th>
                         <th class="py-2 px-4">Price</th>
                         <th class="py-2 px-4">Amount</th>
@@ -26,6 +27,10 @@
                         <tr class="hover:bg-neutral-800/20 transition">
                             <td class="py-3 px-4 text-gray-500">
                                 {{ $trade->created_at?->format('H:i:s') ?? '—' }}
+                            </td>
+
+                            <td class="py-3 px-4 font-mono text-gray-300">
+                                {{ $trade->currency }}
                             </td>
                             
                             <td class="py-3 px-4 uppercase font-bold text-gray-300">

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Trade\Livewire;
 
 use App\Modules\Trade\Domain\Trade;
+use App\Modules\Balances\Domain\Currency;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -137,7 +138,8 @@ class Chart extends Component
 
         return view('livewire.trading.crypto-chart', [
             'initialData' => $this->getChartData(),
-            'initialUnit' => $chartUnitMap[$this->interval] ?? 'hour'
+            'initialUnit' => $chartUnitMap[$this->interval] ?? 'hour',
+            'currencies' => Currency::nonFiat(),
         ]);
     }
 }

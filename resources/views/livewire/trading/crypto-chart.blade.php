@@ -2,8 +2,17 @@
     <div class="flex flex-wrap items-center justify-between gap-4 mb-4 select-none flex-none">
         
         <div class="flex items-center gap-4">
-            <div class="text-sm font-bold text-neutral-100 tracking-wider bg-neutral-950 px-3 py-1 border border-neutral-800 rounded">
-                {{ $selectedCurrency }}
+            <div class="relative">
+                <select 
+                    onchange="window.location.href = '/trade/' + this.value" 
+                    class="text-sm font-bold text-neutral-100 tracking-wider bg-neutral-950 px-3 py-1 border border-neutral-800 rounded cursor-pointer outline-none appearance-none pr-8 hover:bg-neutral-900 transition"
+                >
+                    @foreach($currencies as $currency)
+                        <option value="{{ $currency }}" {{ $selectedCurrency === $currency ? 'selected' : '' }}>
+                            {{ $currency }}/USDT
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="flex gap-2">

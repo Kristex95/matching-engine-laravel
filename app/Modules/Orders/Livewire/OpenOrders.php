@@ -16,18 +16,11 @@ class OpenOrders extends Component
 
     public string $symbol;
 
-    public function mount(string $symbol = 'BTC'): void
-    {
-        $this->symbol = $symbol;
-    }
+    public function mount(): void {}
 
     public function render(OrderService $orderService): View
     {
-        $filterDto = new OrderFilterDTO(
-            currency: $this->symbol
-        );
-
-        $orders = $orderService->getAllActiveOrdersPaginated($filterDto);
+        $orders = $orderService->getAllActiveOrdersPaginated(new OrderFilterDTO());
 
         return view('livewire.trading.open-orders', [
             'orders' => $orders,

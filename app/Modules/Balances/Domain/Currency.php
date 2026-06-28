@@ -18,4 +18,15 @@ enum Currency: string
     {
         return array_column(self::cases(), 'value');
     }
+
+    /**
+     * @return array<string>
+     */
+    public static function nonFiat(): array
+    {
+        return array_values(array_filter(
+            self::values(),
+            static fn (string $currency): bool => $currency !== self::USDT->value,
+        ));
+    }
 }
