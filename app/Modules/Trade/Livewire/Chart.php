@@ -30,6 +30,11 @@ class Chart extends Component
         }
     }
 
+    public function refreshChartData(): void
+    {
+        $this->dispatchChartUpdate();
+    }
+
     public function changeInterval(string $newInterval): void
     {
         if (array_key_exists($newInterval, $this->intervals)) {

@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::view('/', 'welcome');
+Route::get('/', function () {
+    return redirect()->route('trade', ['currency' => 'BTC']);
+})->name('trade-default');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

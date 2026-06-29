@@ -1,8 +1,8 @@
 <div wire:poll.1s class="text-white font-mono h-full flex flex-col pl-2 py-2 justify-between">
 
     <div class="grid grid-cols-3 text-[10px] font-bold text-neutral-500 uppercase tracking-wider pb-2 pr-2 border-b border-neutral-800/60 flex-none select-none">
-        <span class="text-left">Price(USDT)</span>
-        <span class="text-center">Amount({{ strtoupper($symbol) }})</span>
+        <span class="text-left">Price</span>
+        <span class="text-center">Amount</span>
         <span class="text-right">Time</span>
     </div>
 

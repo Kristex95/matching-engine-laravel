@@ -1,4 +1,4 @@
-<div class="w-full h-full bg-neutral-900 p-4 flex flex-col">
+<div wire:poll.5s="refreshChartData" class="w-full h-full bg-neutral-900 p-4 flex flex-col">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-4 select-none flex-none">
         
         <div class="flex items-center gap-4">

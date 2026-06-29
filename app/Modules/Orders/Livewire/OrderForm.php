@@ -10,6 +10,7 @@ use App\Modules\Orders\Application\Services\OrderService;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class OrderForm extends Component
@@ -31,7 +32,7 @@ class OrderForm extends Component
     protected array $rules = [
         'side'   => 'required|in:buy,sell',
         'type'   => 'required|in:limit,market',
-        'price'  => 'required_if:orderType,limit|numeric|gt:0',
+        'price'  => 'required_if:type,limit|numeric|gt:0',
         'amount' => 'required|numeric|gt:0',
     ];
 
@@ -46,11 +47,11 @@ class OrderForm extends Component
 
         try {
             $dto = new StoreOrderDTO(
-                side:     $this->side,
-                type:     $this->type,
+                side: $this->side,
+                type: $this->type,
                 currency: $this->symbol,
-                amount:   $this->amount,
-                price:    $this->type === 'market' ? null : $this->price,
+                amount: $this->amount,
+                price: $this->type === 'market' ? null : $this->price,
             );
 
             /** @var \App\Modules\Users\Domain\User $user */
@@ -63,7 +64,13 @@ class OrderForm extends Component
 
             $this->reset(['price', 'amount']);
         } catch (Exception $e) {
-            session()->flash('error', 'Failed to place order: ' . $e->getMessage());
+            Log::error('Order placement failed', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Show a clean, generic message to the user
+            session()->flash('error', 'Failed to place order. Please try again or contact support.');
         }
     }
 
